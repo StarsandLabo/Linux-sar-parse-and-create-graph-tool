@@ -24,7 +24,7 @@ Python probably requires 3.10(3.8?) or higher.
 The Sar command expects `env LANG=C sar -A` like Ksar, but it may also apply to single output.  
 Content that could not be classified is named unknown.  
 
-# Youtube
+# Video
 [![video](https://user-images.githubusercontent.com/63001062/197391157-33e9250e-43ec-494e-b13c-3288dd7ad400.png)](https://youtu.be/5BfkWg0g4zc)
 
 # Results are below
