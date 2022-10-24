@@ -41,7 +41,7 @@ def main():
     #- Split Json files
     #? ネストかどうかの判断をして適切なスクリプトに引数を渡す。
     # ディレクトリ配下のアイテムをすべて取得して最初の1行を見て判別する。
-    textfile_paths = [ v.resolve() for v in TEXT_SAVE_DIR.glob('./*.txt') ]
+    textfile_paths = [ v.resolve() for v in TEXT_SAVE_DIR.glob('./*.tsv') ]
     nested_headers = [ set([v for v in l if v.__len__() > 1]) for l in map(lambda x: x.split(" "),[
             'MBfsfree  MBfsused   %fsused  %ufsused     Ifree     Iused    %Iused FILESYSTEM',
             'CPU    wghMHz',
