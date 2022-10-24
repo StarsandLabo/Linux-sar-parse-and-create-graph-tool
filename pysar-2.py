@@ -51,7 +51,8 @@ def main():
             'CPU       MHz',
             'CPU   total/s   dropd/s squeezd/s  rx_rps/s flw_lim/s',
             'IFACE   rxerr/s   txerr/s    coll/s  rxdrop/s  txdrop/s  txcarr/s  rxfram/s  rxfifo/s  txfifo/s',
-            'IFACE   rxpck/s   txpck/s    rxkB/s    txkB/s   rxcmp/s   txcmp/s  rxmcst/s   %ifutil ',
+            'IFACE   rxpck/s   txpck/s    rxkB/s    txkB/s   rxcmp/s   txcmp/s  rxmcst/s   %ifutil',
+            'IFACE   rxpck/s   txpck/s    rxkB/s    txkB/s   rxcmp/s   txcmp/s  rxmcst/s',
             'DEV       tps     rkB/s     wkB/s     dkB/s   areq-sz    aqu-sz     await     %util',
             'INTR    intr/s',
             'CPU      %usr     %nice      %sys   %iowait    %steal      %irq     %soft    %guest    %gnice     %idle'
