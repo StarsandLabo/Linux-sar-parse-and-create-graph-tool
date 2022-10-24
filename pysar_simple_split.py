@@ -23,7 +23,7 @@ class Color:
     INVISIBLE = '\033[08m'
     REVERCE   = '\033[07m'
 
-dir_save_result = Path('./').joinpath('result','text')
+dir_save_result = Path('./').joinpath('result','tsv')
 
 def main():
     COLOR = Color()
@@ -153,7 +153,7 @@ def main():
 
         if no_file_save == False:
             dir_save_result.mkdir(exist_ok=True,parents=True)            
-            with open(f'{dir_save_result.joinpath(f"sar-{filename_prefix}")}.txt', mode='w+', encoding='utf-8') as fp:
+            with open(f'{dir_save_result.joinpath(f"sar-{filename_prefix}")}.tsv', mode='w+', encoding='utf-8') as fp:
                 fp.write('\n'.join(single_element))
             print(f"{COLOR.CYAN}Text Result:{COLOR.END}", Path(fp.name).resolve().as_posix()) if no_output_terminal == False else None
         else:
