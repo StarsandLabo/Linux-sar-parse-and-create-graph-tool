@@ -1,5 +1,8 @@
 # Linux-sar-parse-and-create-graph-tool
 
+# Video
+[![video](https://user-images.githubusercontent.com/63001062/197391157-33e9250e-43ec-494e-b13c-3288dd7ad400.png)](https://youtu.be/5BfkWg0g4zc)
+
 # Try it anyway.
 
 ```shell
@@ -24,13 +27,10 @@ Python probably requires 3.10(3.8?) or higher.
 The Sar command expects `env LANG=C sar -A` like Ksar, but it may also apply to single output.  
 Content that could not be classified is named unknown.  
 
-# Video
-[![video](https://user-images.githubusercontent.com/63001062/197391157-33e9250e-43ec-494e-b13c-3288dd7ad400.png)](https://youtu.be/5BfkWg0g4zc)
-
 # Results are below
 
 ```shell
-./result/
+./result/<Start Processing Time>
 ├── html # Graphs On HTML
 │   ├── sar-B
 │   ├── sar-F
@@ -55,7 +55,7 @@ Content that could not be classified is named unknown.
 もともとはグラフだけ出力するように作ろうと考えていたのですが、うまくできなかったため  
 text(tsv) > json > htmlと順を追って分割せざる得ませんでした。  
 
-例えばグラフはいらないけどJSONはほしい。といった場合は  
+<details><summary>例えばグラフはいらないけどJSONはほしい。といった場合は</summary>
 
 `python pysar_simple_split.py --inputfile <sar-result-file>`　でsar -Aコマンドの実行結果をテキストに分割します。  
 その後は結果がネストされている場合は `python pysar_split_nest.py --inputfile <target-text>` とし、  
@@ -67,4 +67,10 @@ text(tsv) > json > htmlと順を追って分割せざる得ませんでした。
 
 テキストだけExcelに取り込んでExcelのグラフを作る。というのもgoodなのですが、ほぼ生のSarで達成できるのでした…
 
+</details>
+
 正直面倒だと思うので全部出力が終わってから不要なディレクトリだけ削除してください。
+
+# Changelog
++ 2022-10-26
+  + Create directory named by processing start time because avoid overwrite result.
