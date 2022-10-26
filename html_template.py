@@ -105,15 +105,49 @@ CHART_PART="""<style>
     // document.getElementById('converted_imglink').setAttribute('href', image);
   </script>"""
 
-FORM_PART="""<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-<meta charset="utf-8">
-<title>!!!title!!!</title>
-</head><body>
-  <form id="upload">
-    <input type="file" id="top">
-    <button>Upload</button>
-  </form>
-</body></html>
-"""
+class INDEX():
+  INDEX_PART="""
+  <!DOCTYPE html>
+  <html lang="en">
+    <head>
+      <style>
+          !!!PlaceholderCSS!!!
+      </style>
+      <meta charset="utf-8">
+      <title>title</title>
+      <script src="script.js"></script>
+    </head>
+    <body>
+      <div id="left">
+          !!!Placeholder!!!
+      </div>
+      <dif id="right">
+          <iframe src="" name="if_right">
+          </iframe>
+      </div>
+    </body>
+  </html>
+  """
+  CSS_PART="""
+  #left {
+	position: static;
+	top: 0;
+	left: 0;
+	width: 15%;
+	height: 100%;
+	text-align: left;
+	}
+  #right{
+	position: fixed;
+	top: 0;
+	right: 0;
+	left: 15%;
+	height: 100%;
+	border-left: 2px solid #ccc;
+	}
+  iframe {
+	border: none;
+	height: 100%;
+	width: 100%;
+	}
+  """
