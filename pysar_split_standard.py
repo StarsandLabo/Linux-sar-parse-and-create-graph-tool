@@ -5,7 +5,7 @@ from concurrent.futures import ThreadPoolExecutor
 import argparse
 import sys
 
-dir_save_result = Path('./').joinpath('result','json')
+dir_save_result = Path('./').joinpath('json')
 
 def main():
     ORANGE,END,GREEN = "\033[38;5:172m","\033[0m",'\033[32m'

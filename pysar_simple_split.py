@@ -21,7 +21,7 @@ class Color:
     INVISIBLE = '\033[08m'
     REVERCE   = '\033[07m'
 
-dir_save_result = Path('./').joinpath('result','tsv')
+dir_save_result = Path('./').joinpath('tsv')
 
 def main():
     COLOR = Color()

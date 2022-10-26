@@ -64,7 +64,7 @@ def main():
             .replace('!!!ChartPlaceholder!!!', processed_chart_part)
 
         #ファイルに出力するセクション    
-        dir_save_result = Path('./').joinpath('result','html',f'{Path(inputfile).stem}')
+        dir_save_result = Path('./').joinpath('html',f'{Path(inputfile).stem}')
         dir_save_result.mkdir(exist_ok=True,parents=True)
         validated_input_title = "".join( [ v for v in map(lambda S: S if re.match(r'[a-z,A-Z,0-9]',S) else "_", input_title)] )
         with open(f'{dir_save_result.joinpath(f"{validated_input_title}.html")}', mode='w+', encoding='utf-8') as fp:

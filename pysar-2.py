@@ -12,7 +12,7 @@ from time import perf_counter
 import webbrowser
 import html_template
 
-HTML_SAVE_DIR = Path('./').joinpath('result','html')
+HTML_SAVE_DIR = Path('./').joinpath('html')
 
 def main():
     parser = argparse.ArgumentParser(description='pysar-split-nest ver S.2022.10.23', exit_on_error=True, add_help=True)
@@ -39,14 +39,14 @@ def main():
     PERFCOUNTER_STARTTIME = perf_counter()
     location_before_processing = Path('./').resolve()
     processing_start_time = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
-    (result_dir_root := Path('./').joinpath(processing_start_time)).mkdir(exist_ok=True)
+    (result_dir_root := Path('./').joinpath('result',processing_start_time)).mkdir(exist_ok=True)
     os.chdir( result_dir_root.as_posix() )
     
     with open('inputfilename.txt',mode='w+', encoding='utf-8') as fp:
         fp.write(inputfile + "\n")
     
     #- Create plain texts
-    SPLIT_SAR_MASTERFILE_TOOL_PATH = Path('../').glob('**/**/pysar_simple_split.py').__iter__().__next__().resolve()
+    SPLIT_SAR_MASTERFILE_TOOL_PATH = Path('../../').glob('**/**/pysar_simple_split.py').__iter__().__next__().resolve()
     exec_command_line = ["python",f"{SPLIT_SAR_MASTERFILE_TOOL_PATH}","--inputfile", inputfile]
     ExecCommandLineByOS(exec_command_line)
 
@@ -70,8 +70,8 @@ def main():
             'CPU      %usr     %nice      %sys   %iowait    %steal      %irq     %soft    %guest    %gnice     %idle'
         ]) if l.__len__() > 1
     ]
-    SPLIT_NO_NESTED_FILE_TOOL_PATH = Path('../').glob('**/**/pysar_split_standard.py').__iter__().__next__().resolve()
-    SPLIT_NESTED_FILE_TOOL_PATH = Path('../').glob('**/**/pysar_split_nest.py').__iter__().__next__().resolve()
+    SPLIT_NO_NESTED_FILE_TOOL_PATH = Path('../../').glob('**/**/pysar_split_standard.py').__iter__().__next__().resolve()
+    SPLIT_NESTED_FILE_TOOL_PATH = Path('../../').glob('**/**/pysar_split_nest.py').__iter__().__next__().resolve()
     def SplitFilesForHTML(input_filepath: Path):
         with open(input_filepath.as_posix(), mode='r', encoding='utf-8') as fp:
             if set(fp.readline().split()[1:]) in nested_headers:
@@ -85,13 +85,13 @@ def main():
 
     #- Create Graph on HTML(Thanks for Chartjs!)
     # HTMLを出力する。出力済みのJSONを参照する。
-    CREATE_HTML_TOOL_PATH = Path('../').glob('**/**/pysar_create_graph.py').__iter__().__next__().resolve()
+    CREATE_HTML_TOOL_PATH = Path('../../').glob('**/**/pysar_create_graph.py').__iter__().__next__().resolve()
     jsonfile_paths = [ v.resolve() for v in JSON_SAVE_DIR.glob('./*.json') ]
     for filepath in jsonfile_paths:
         with ThreadPoolExecutor() as executor:
             executor.submit(ExecCommandLineByOS, ["python", f"{CREATE_HTML_TOOL_PATH}", "--inputfile", filepath])
     
-    HTML_files_path = [ v.as_posix() for v in Path("result").glob("./**/*.html") ]
+    HTML_files_path = [ v.as_posix() for v in Path(".").glob("./**/*.html") ]
     
     # 最小のHTMLタグを作成する
     create_div = lambda x: f'{" "*6}<div><a href="{x.replace(result_dir_root.as_posix()+"/","")}" target="if_right">{Path(x).name}</a></div>'
