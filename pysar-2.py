@@ -13,7 +13,7 @@ import webbrowser
 HTML_SAVE_DIR = Path('./').joinpath('result','html')
 
 def main():
-    parser = argparse.ArgumentParser(description='pysar-split-nest ver S.2022.10.23', exit_on_error=True, add_help=True)
+    parser = argparse.ArgumentParser(description='Python sar parse and create graph tool S.2022.10.26', exit_on_error=True, add_help=True)
     parser.add_argument('-i','--inputfile', nargs=1, help=f'Filepath by splitted sar result file', type=Path)
     """
     parser.add_argument('-j','--json',help='Create JSONfile', action='store_true')
