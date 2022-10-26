@@ -15,7 +15,7 @@ python ./pysar-2.py --inputfile <sar-result-file>
 
 # Overview
 
-Sarコマンドの出力をそれぞれText(tsv),Json,HTML(Graph)で出力します。  
+Sarコマンドの出力をそれぞれText(tsv),Json,グラフ(HTML Chart.js Graph)で出力します。  
 Pythonはおそらく3.10(3.8?)以上が必要です。  
 
 SarコマンドはKsarと同様に `env LANG=C sar -A` を想定していますが、単体の出力でも適用できるかもしれません。  
