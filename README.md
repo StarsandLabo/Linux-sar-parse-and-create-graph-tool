@@ -21,7 +21,7 @@ Pythonはおそらく3.10(3.8?)以上が必要です。
 SarコマンドはKsarと同様に `env LANG=C sar -A` を想定していますが、単体の出力でも適用できるかもしれません。  
 分類できなかった内容はunknownの名前が付きます。
 
-Output the output of the Sar command in Text, Json, HTML (Graph) respectively.  
+Output the output of the Sar command in TSV, Json, HTML (Graph) respectively.  
 Python probably requires 3.10(3.8?) or higher.  
 
 The Sar command expects `env LANG=C sar -A` like Ksar, but it may also apply to single output.  
@@ -39,7 +39,7 @@ Content that could not be classified is named unknown.
 │   ├── sar-v
 │   └── sar-w
 ├── json # JSON Results
-└── text # Text Results
+└── tsv # TSV Results
 
 40 directories
 ```
@@ -74,3 +74,5 @@ text(tsv) > json > htmlと順を追って分割せざる得ませんでした。
 # Changelog
 + 2022-10-26
   + Create directory named by processing start time because avoid overwrite result.
++ 2022-10-23
+  + Release
