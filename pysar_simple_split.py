@@ -1,11 +1,9 @@
-
 import re
 from pathlib import Path
 from concurrent.futures import ThreadPoolExecutor
 
 from traceback import format_exc
 from collections import deque
-from time import perf_counter
 import argparse
 
 class Color:
@@ -155,7 +153,7 @@ def main():
             dir_save_result.mkdir(exist_ok=True,parents=True)            
             with open(f'{dir_save_result.joinpath(f"sar-{filename_prefix}")}.tsv', mode='w+', encoding='utf-8') as fp:
                 fp.write('\n'.join(single_element))
-            print(f"{COLOR.CYAN}Text Result:{COLOR.END}", Path(fp.name).resolve().as_posix()) if no_output_terminal == False else None
+            print(f"{COLOR.CYAN}TSV Result:{COLOR.END}", Path(fp.name).resolve().as_posix()) if no_output_terminal == False else None
         else:
             print('\n'.join(single_element)) if no_output_terminal == False else None
 if __name__ == '__main__':

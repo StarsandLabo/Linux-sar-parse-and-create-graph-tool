@@ -2,6 +2,7 @@ from pathlib import Path
 import argparse
 import subprocess
 import os
+from unittest import result
 from pysar_simple_split import dir_save_result as TEXT_SAVE_DIR
 from pysar_split_standard import dir_save_result as JSON_SAVE_DIR
 from pysar_split_nest import dir_save_result as JSON_SAVE_DIR
@@ -9,11 +10,12 @@ from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime
 from time import perf_counter
 import webbrowser
+import html_template
 
 HTML_SAVE_DIR = Path('./').joinpath('result','html')
 
 def main():
-    parser = argparse.ArgumentParser(description='Python sar parse and create graph tool S.2022.10.26', exit_on_error=True, add_help=True)
+    parser = argparse.ArgumentParser(description='pysar-split-nest ver S.2022.10.23', exit_on_error=True, add_help=True)
     parser.add_argument('-i','--inputfile', nargs=1, help=f'Filepath by splitted sar result file', type=Path)
     """
     parser.add_argument('-j','--json',help='Create JSONfile', action='store_true')
@@ -89,11 +91,26 @@ def main():
         with ThreadPoolExecutor() as executor:
             executor.submit(ExecCommandLineByOS, ["python", f"{CREATE_HTML_TOOL_PATH}", "--inputfile", filepath])
     
+    HTML_files_path = [ v.as_posix() for v in Path("result").glob("./**/*.html") ]
+    
+    # 最小のHTMLタグを作成する
+    create_div = lambda x: f'{" "*6}<div><a href="{x.replace(result_dir_root.as_posix()+"/","")}" target="if_right">{Path(x).name}</a></div>'
+    div_list = []
+    [ div_list.append( create_div(v) ) for v in HTML_files_path ]
+
+    div_list.sort()
+    index_template = html_template.INDEX().INDEX_PART
+    index_template = index_template.replace('!!!Placeholder!!!',"\n".join(div_list))
+
+    with open('index.html', mode='w+', encoding='utf-8') as fp:
+        fp.write(
+            index_template.replace("!!!PlaceholderCSS!!!",html_template.INDEX.CSS_PART)
+    )
     # return before processing directory.
     os.chdir( location_before_processing )
     
     try:
-        webbrowser.open_new_tab(Path(location_before_processing).joinpath(result_dir_root,'index.html'))
+        webbrowser.open(Path(location_before_processing).joinpath(result_dir_root,'index.html'))
     except:
         pass
     

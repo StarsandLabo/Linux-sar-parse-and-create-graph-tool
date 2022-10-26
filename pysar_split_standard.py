@@ -66,7 +66,7 @@ def main():
             else:
                 fp.write(json.dumps(MASTER_TABLE))
                 
-            print(f'\033[2K{GREEN}JSON Result file:{END}', Path(fp.name).resolve().as_posix()) if no_output_terminal == False else None
+            print(f'\033[2K{GREEN}JSON Result:{END}', Path(fp.name).resolve().as_posix()) if no_output_terminal == False else None
     else:
         if no_output_terminal == False:
             print(MASTER_TABLE) if no_indent == True else print(json.dumps(MASTER_TABLE, indent=4, ensure_ascii=False))

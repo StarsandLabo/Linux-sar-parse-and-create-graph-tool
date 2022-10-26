@@ -70,11 +70,11 @@ def main():
         with open(f'{dir_save_result.joinpath(f"{validated_input_title}.html")}', mode='w+', encoding='utf-8') as fp:
             fp.write(processed_base_html)
                 
-            print(f'{ORANGE}HTML Result file:{END}', Path(fp.name).resolve().as_posix()) if no_output_terminal == False else None
+            print(f'{ORANGE}HTML Result:{END}', Path(fp.name).resolve().as_posix()) if no_output_terminal == False else None
             #print('microsoft-edge ', Path(fp.name).resolve().as_posix()) if no_output_terminal == False else None
             #from subprocess import Popen
             #Popen(["microsoft-edge", Path(fp.name).resolve().as_posix()])
-            
+        
     if isNested == True:
         labels = [""] * RAW_JSON['TIME'][RAW_JSON['TIME'].__iter__().__next__()].__len__()
         DATASETS = {}
