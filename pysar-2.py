@@ -39,7 +39,7 @@ def main():
     PERFCOUNTER_STARTTIME = perf_counter()
     location_before_processing = Path('./').resolve()
     processing_start_time = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
-    (result_dir_root := Path('./').joinpath('result',processing_start_time)).mkdir(exist_ok=True)
+    (result_dir_root := Path('./').joinpath('result',processing_start_time)).mkdir(exist_ok=True, parents=True)
     os.chdir( result_dir_root.as_posix() )
     
     with open('inputfilename.txt',mode='w+', encoding='utf-8') as fp:
