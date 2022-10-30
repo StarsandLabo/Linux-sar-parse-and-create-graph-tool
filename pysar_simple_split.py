@@ -1,6 +1,6 @@
 import re
 from pathlib import Path
-from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import ThreadPoolExecutor, ProcessPoolExecutor
 
 from traceback import format_exc
 from collections import deque
@@ -44,7 +44,7 @@ def main():
     # 時間（ポイントする数）がどのくらいあるかは確認する
     
     RECORDING_TIME = re.compile(r'((\d+.?).?:?){3}')
-    
+
     RAW_CONTENT_SPLITTED = RAW_CONTENT.split("\n")
     for line in RAW_CONTENT_SPLITTED:
         try:
@@ -55,51 +55,84 @@ def main():
     sar_exec_times_count_key = RECORDING_TIME.sub("",sar_exec_times_count_key)
     RECORD_COUNT = ([ _ for _ in RAW_CONTENT_SPLITTED if ( (sar_exec_times_count_key in _) and not (re.search(r'^[a-zA-Z]', _[0])) ) ]).__len__()
     
-    HEADERS = set( [  RECORDING_TIME.sub("", v.group()).lstrip('\n\n') for v in re.finditer(r'\n\n(?!Average:|Summary:).*$', RAW_CONTENT, flags=re.MULTILINE)] )
-
-    # %などの文字はファイル名に使いづらいので１６進数に変換する用のライン
-    #[[ print(x,end="") for x in map(lambda x: hex(ord(x)) if not re.match(r'[a-zA-Z,\t]', x ) else x, re.sub(r'\s+',"\t",v) )] for v in HEADERS]
+    HEADERS_PROCESSED = set( [ RECORDING_TIME.sub("", v.group()).lstrip('\n\n').replace(" ","").rstrip("\n") for v in re.finditer(r'\n\n(?!Average:|Summary:).*$', RAW_CONTENT, flags=re.MULTILINE)] )
+    HEADERS_HASHTABLE = {}
     
-    def LineAppend(header: str):
-        target_content, skipped_content_raw = [],""
-        
-        for line in RAW_CONTENT_SPLITTED:
-            #if header ==  RECORDING_TIME.sub("",line): print(line, header,sep="\n"); input()
-            try:
-                if ('Average:' in line) or ('Summary:' in line): raise ValueError()
-            except ValueError:
-                skipped_content_raw += line+"\n"; continue
-            
-            if header in line:
-                if header ==  RECORDING_TIME.sub("",line):
-                    #print(header,RECORDING_TIME.sub("",line),sep="\n")
-                    #input()
-                    catchflg = True
-                    continue
-            elif  RECORDING_TIME.sub("",line) in HEADERS:
-                catchflg = False
-                continue
-            else:
-                pass
-            
-            try:
-                if catchflg == True: target_content.append(line)
-                """
-                if catchflg == True: print(line, f"\033[45;5m'{catchflg}'\033[m")
-                if catchflg == True: input()
-                """
-            except:
-                continue
-        return target_content, skipped_content_raw
-        
-    RAW_BY_CONTENT,skipped_content = {},{}
-    headers_len = HEADERS.__len__()
-    for i, HEADER in enumerate(HEADERS,start=1):
-        with ThreadPoolExecutor() as executor_create_by_content:
-            RAW_BY_CONTENT[HEADER],skipped_content[HEADER] = executor_create_by_content.submit(LineAppend, HEADER).result()
-            print( "\033[2K","[ Splitting by Content ] ", i," / ",headers_len, end="\r", sep="" )
+    for line in [ RECORDING_TIME.sub("", nominated_header.group()).lstrip('\n\n').rstrip("\n") for nominated_header in re.finditer(r'\n\n(?!Average:|Summary:).*$', RAW_CONTENT, flags=re.MULTILINE) ]:
+        HEADERS_HASHTABLE[line.replace(" ","")] = list( [ v for v in line.split(" ") if len(v) > 0 ])# set してしまうと後ろの処理でもとの表示通りに並べ替えるのが非常に面倒になってしまう。TIMEをここで入れると変数名と内容に若干の食い違いのある印象となってしまう。
+    # 悪下図 4
 
-    for i, header in enumerate(list(HEADERS), start=1):
+    #print( RAW_CONTENT_SPLITTED[0:])
+    #times = 4 if os.cpu_count() > 8 else 2
+    times = int(RAW_CONTENT_SPLITTED.__len__()/4 )
+    datas = [ RAW_CONTENT_SPLITTED[idx:idx+times] for idx in range(0, len(RAW_CONTENT_SPLITTED), times)]
+    
+    # ヘッダを用いたハッシュテーブルが望ましいが、分割したリストをループにかける場合、一番最初のグループはヘッダが不明な可能性が高いため、
+    # ヘッダが判明するものはもちろん別のリストとして格納するが、ヘッダの不明なグループを前のグループの末尾に連結する。
+    # その後各配列に分散した同じグループを上から順番に結合していく
+    # その際かその後にヘッダの名前は改める（どのタイミングで実施するかは未定）
+    
+    with ThreadPoolExecutor() as executor:
+        def TrimTimeAndWhitespaceAndNewlinechar(x):
+            return "".join( x.split(" ")[1:] ).rstrip("\n")
+        
+        def DisplayingConcurrently(input_lines):
+            groups = []
+            group = []
+            for line in input_lines:
+                
+                if TrimTimeAndWhitespaceAndNewlinechar(line) in HEADERS_PROCESSED:
+                    groups.append(group)
+                    (group := []).append(TrimTimeAndWhitespaceAndNewlinechar(line))
+                else:
+                    if  line.__len__() > 0 and \
+                        'Average:' not in line and\
+                        'Summary:' not in line:
+                            group.append(line)
+            groups.append(group)
+            return groups
+        
+        splitted_datas_with_header = {}
+        for i, d in enumerate([ [i, executor.submit(DisplayingConcurrently, data)] for i, data in enumerate(datas)]) :
+            splitted_datas_with_header[d[0]] = d[1].result()
+
+    # 初回グループを除くすべてのグループの一番最初のグループを、前のIDの一番うしろの配列とつなぐ。
+    for i in range(1, len(datas)):
+        #? testcodes Check array statement.
+        #? input(f"{Color.CYAN}{splitted_datas_with_header[i-1][-1]}{Color.END}")
+        #? input(f"{Color.YELLOW}{splitted_datas_with_header[i][0]}{Color.END}")
+        splitted_datas_with_header[i-1][-1] = splitted_datas_with_header[i-1][-1] + splitted_datas_with_header[i].pop(0)
+        #? input(f"{Color.RED}{splitted_datas_with_header[i-1][-1]}{Color.END}")
+        #? input(f"{Color.GREEN}{splitted_datas_with_header[i][0]}{Color.END}")
+    
+    # 各配列に散っているヘッダ毎の内容を結合する。
+    # ヘッダ毎の連想配列を用意する。
+    
+    JOINTED_RESULTS = {}
+    
+    for header in HEADERS_PROCESSED:
+        JOINTED_RESULTS[header] = []
+    
+    # ここで連結する際、splitted_datas_with_header[i]の中には同じヘッダーを持つ秒違いの情報があり、
+    # それをまとめる必要がある。
+    # headerをキーにしてrecord[0] == headerの時はappendする。
+    headers_len = HEADERS_PROCESSED.__len__()
+    for i in range(datas.__len__()):
+        for header in HEADERS_PROCESSED:
+            for record in splitted_datas_with_header[i]:
+                if header in record:
+                    JOINTED_RESULTS[header] += record[1:]
+                    continue
+            print( "\033[2K","[ Splitting by Content ] ", i," / ",headers_len, end="\r", sep="" )    
+
+    for i, header in enumerate(list(HEADERS_PROCESSED), start=1):
+        l = []
+        HEADERS_HASHTABLE[header].insert(0,'TIME')
+        l.append( "\t".join( HEADERS_HASHTABLE[header] ) )
+        
+        for v in JOINTED_RESULTS[header]:
+            l.append( "\t".join( [x for x in v.split(" ") if x.__len__() > 0] ) )
+
         match header:
             case x if 'pgpgin/s'  in x : filename_prefix = 'B'
             case x if 'bread/s'   in x : filename_prefix = 'b'
@@ -146,15 +179,12 @@ def main():
             
             case _: filename_prefix = f'unknown{i}'
 
-        (single_element := []).append( 'TIME' + "\t".join( re.sub(r'\s+','\t', (" " + header) ).split("\t") ) )
-        [ single_element.append( re.sub(r'\s+|\t+','\t', line) ) for line in RAW_BY_CONTENT[header] if line.__len__() > 1 ]
-
         if no_file_save == False:
             dir_save_result.mkdir(exist_ok=True,parents=True)            
             with open(f'{dir_save_result.joinpath(f"sar-{filename_prefix}")}.tsv', mode='w+', encoding='utf-8') as fp:
-                fp.write('\n'.join(single_element))
+                fp.write('\n'.join(l))
             print(f"{COLOR.CYAN}TSV Result:{COLOR.END}", Path(fp.name).resolve().as_posix()) if no_output_terminal == False else None
         else:
-            print('\n'.join(single_element)) if no_output_terminal == False else None
+            print('\n'.join(l)) if no_output_terminal == False else None
 if __name__ == '__main__':
     main()
