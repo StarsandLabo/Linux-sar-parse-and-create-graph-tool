@@ -72,6 +72,8 @@ text(tsv) > json > htmlと順を追って分割せざる得ませんでした。
 正直面倒だと思うので全部出力が終わってから不要なディレクトリだけ削除してください。
 
 # Changelog
++ 2022-10-30
+  + tsv part Algorithm Changed.(exec concurrently)
 + 2022-10-27
   + Create Index.html temporaly.
 + 2022-10-26
