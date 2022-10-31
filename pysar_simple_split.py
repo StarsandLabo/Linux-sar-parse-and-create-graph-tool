@@ -101,7 +101,10 @@ def main():
         #? testcodes Check array statement.
         #? input(f"{Color.CYAN}{splitted_datas_with_header[i-1][-1]}{Color.END}")
         #? input(f"{Color.YELLOW}{splitted_datas_with_header[i][0]}{Color.END}")
-        splitted_datas_with_header[i-1][-1] = splitted_datas_with_header[i-1][-1] + splitted_datas_with_header[i].pop(0)
+        try:
+            splitted_datas_with_header[i-1][-1] = splitted_datas_with_header[i-1][-1] + splitted_datas_with_header[i].pop(0)
+        except:
+            pass
         #? input(f"{Color.RED}{splitted_datas_with_header[i-1][-1]}{Color.END}")
         #? input(f"{Color.GREEN}{splitted_datas_with_header[i][0]}{Color.END}")
     
